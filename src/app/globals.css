@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --jarvis-bg: #0a0e1a;
+  --jarvis-panel: #0f1626;
+  --jarvis-accent: #00d4ff;
+  --jarvis-accent2: #0077ff;
+  --jarvis-text: #c8d6e5;
+  --jarvis-muted: #5a6b82;
+  --jarvis-glow: rgba(0, 212, 255, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--jarvis-bg);
+  color: var(--jarvis-text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--jarvis-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--jarvis-muted);
+  border-radius: 3px;
+}
+
+/* Glow effect utility */
+.glow {
+  box-shadow: 0 0 20px var(--jarvis-glow);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--jarvis-glow);
+}
