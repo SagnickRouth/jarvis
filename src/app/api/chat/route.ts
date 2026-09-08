@@ -1,27 +1,29 @@
+import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { streamText } from "ai";
+import { JARVIS_SYSTEM_PROMPT } from "@/lib/system-prompt";
+import { getJarvisTools } from "@/lib/composio";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY!,
 });
 
-const SYSTEM_PROMPT = `You are JARVIS, Sagnick's personal AI assistant.
-Be concise, direct, and proactive. Sagnick is a B.Tech CS student building AI systems.
-When responding, keep answers clear and conversational — your responses will be
-read aloud via TTS, so avoid markdown symbols, code blocks, and long bullet lists
-in spoken replies. Use natural language.
-For technical questions, be precise but accessible.`;
-
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
+  // Load Composio tools (Gmail / GitHub / Calendar). Empty {} if not configured.
+  const tools = await getJarvisTools();
+
   const result = streamText({
     model: openrouter(process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-4"),
-    system: SYSTEM_PROMPT,
-    messages,
+    system: JARVIS_SYSTEM_PROMPT,
+    messages: convertToModelMessages(messages),
+    tools,
+    // Allow the model to call a tool, read the result, and respond — up to 5 hops.
+    stopWhen: stepCountIs(5),
   });
 
-  return result.toTextStreamResponse();
+  return result.toUIMessageStreamResponse();
 }
